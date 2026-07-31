@@ -5,6 +5,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from config import HOST, PORT, AUDIO_TEMP_DIR
 from core.database import init_db, close_db
@@ -31,6 +32,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=["*"])
 os.makedirs(AUDIO_TEMP_DIR, exist_ok=True)
 app.mount("/audio", StaticFiles(directory=AUDIO_TEMP_DIR), name="audio")
 

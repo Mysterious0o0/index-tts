@@ -28,9 +28,10 @@ def _local_audio_url(request: Request, record_id: str) -> str | None:
     filename = f"{record_id}.wav"
     local_path = os.path.join(AUDIO_TEMP_DIR, filename)
     if os.path.isfile(local_path):
-        # 利用 request 拼出完整地址，兼容不同部署方式
-        base = str(request.base_url).rstrip("/")
-        return f"{base}/audio/{filename}"
+        proto = request.headers.get("x-forwarded-proto", request.url.scheme)
+        host = request.headers.get("host", request.url.netloc)
+        return f"{proto}://{host}/genVoice/audio/{filename}"
+
     return None
 
 
